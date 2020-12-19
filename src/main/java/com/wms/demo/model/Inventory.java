@@ -34,4 +34,5 @@ public class Inventory {
     private String className;
     @Column(name = "price")
     private Float price;
+
 }
