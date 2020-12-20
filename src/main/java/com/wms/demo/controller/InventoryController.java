@@ -33,20 +33,25 @@ public class InventoryController {
     }
     @PostMapping("create")
     public ResourceResponse store(@RequestBody Inventory inventory){
-        Integer status = inventoryService.storeInventory(inventory);
+        Integer status = inventoryService.createInventory(inventory);
         return new ResourceResponse(status,null);
     }
     @PostMapping("update")
     public ResourceResponse update(@RequestBody InventoryUpdateDTO updateInventory){
-        Integer status = inventoryService.updateInventory(updateInventory);
+        Integer status = inventoryService.updateInventory(updateInventory.getId(),updateInventory.getData());
         return new ResourceResponse(status,null);
     }
     @DeleteMapping("delete/{id}")
     public ResourceResponse delete(@PathVariable Integer id){
-        Integer status = inventoryService.delete(id);
+        Integer status = inventoryService.deleteInventory(id);
         return new ResourceResponse(status,null);
     }
-
+    @GetMapping("abcAnalysis")
+    public ResourceResponse ABCAnalysis(){
+        Integer status = inventoryService.ABCAnalysis();
+        List<Inventory> inventoryList = inventoryService.getAllInventory();
+        return new ResourceResponse(status,"ABCAnalysis",inventoryList);
+    }
 
 
 }

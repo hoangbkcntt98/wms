@@ -29,10 +29,10 @@ public class Inventory {
     @Column(name = "status")
     private Integer status;
     @Column(name = "quantities")
-    private Float quantities;
+    private double quantities;
     @Column(name = "class")
-    private String className;
+    private String inventoryClass;
     @Column(name = "price")
-    private Float price;
+    private double price;
 
 }
