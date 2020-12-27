@@ -1,13 +1,13 @@
 package com.wms.demo.services;
 
-import com.wms.demo.dto.request.InventoryUpdateDTO;
+import com.wms.demo.model.Abc;
 import com.wms.demo.model.AnnualDemand;
 import com.wms.demo.model.Inventory;
+import com.wms.demo.repository.AbcRepository;
 import com.wms.demo.repository.AnnualDemandRepository;
 import com.wms.demo.repository.InventoryRepository;
 import com.wms.demo.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +18,8 @@ public class InventoryService {
     InventoryRepository inventoryRepository;
     @Autowired
     AnnualDemandRepository annualDemandRepository;
+    @Autowired
+    AbcRepository abcRepository;
     public Inventory findInventory(Integer id){
         return inventoryRepository.findById(id).orElse(null);
     }
@@ -45,7 +47,7 @@ public class InventoryService {
                 updateItem.setStatus(data.getStatus());
                 updateItem.setType(data.getType());
                 updateItem.setPrice(data.getPrice());
-                updateItem.setInventoryClass(data.getInventoryClass());
+//                updateItem.setInventoryClass(data.getInventoryClass());
                 inventoryRepository.save(updateItem);
             }
         }catch(Exception e){
@@ -64,6 +66,13 @@ public class InventoryService {
     public int ABCAnalysis(){
         double totalUsageValue=0.0;
         double cumulativeProportion =0.0;
+        List<Abc> abcList = abcRepository.findAll();
+        for(int i=1;i<abcList.size();i++){
+            abcList.get(i).setRange(abcList.get(i).getRange()+abcList.get(i-1).getRange());
+        }
+        for(Abc item : abcList) {
+            System.out.println(item.getRange());
+        }
         double aClass= 81;
         double bClass= 96;
         double cClass = 101;
@@ -79,14 +88,20 @@ public class InventoryService {
                 double usageValueProportion = annualUsageValue/totalUsageValue*100;
                 cumulativeProportion+=usageValueProportion;
                 item.setCumulativeProportion(cumulativeProportion);
-                if(cumulativeProportion<81){
-                    inventory.setInventoryClass("A");
-                }
-                else if(cumulativeProportion<96&&cumulativeProportion>=81){
-                    inventory.setInventoryClass("B");
+                item.setAnnualUsageValue(annualUsageValue);
+                item.setUsageValProportion(usageValueProportion);
+                if(cumulativeProportion<abcList.get(0).getRange()){
+                    inventory.setInventoryClass(abcList.get(0).getName());
+
                 }else{
-                    inventory.setInventoryClass("C");
+                    for(int i=1;i<abcList.size();i++){
+                      if(cumulativeProportion<=abcList.get(i).getRange()&&cumulativeProportion>abcList.get(i-1).getRange()){
+                          inventory.setInventoryClass(abcList.get(i).getName());
+                      }
+                    }
                 }
+
+
                 annualDemandRepository.save(item);
             }
 
