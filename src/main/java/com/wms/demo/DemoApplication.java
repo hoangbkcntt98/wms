@@ -2,7 +2,10 @@ package com.wms.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+@EntityScan("com.wms.demo.model")
 @SpringBootApplication
 public class DemoApplication {
 
