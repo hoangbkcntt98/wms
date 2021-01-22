@@ -33,4 +33,13 @@ public class FileController {
             return new ResourceResponse(Status.ERROR);
         }
     }
+    @PostMapping("upload/risk")
+    public ResourceResponse importRisk(@RequestParam("file") MultipartFile file){
+        try{
+            fileService.store(file,3);
+            return new ResourceResponse(Status.SUCCESS);
+        }catch (Exception e){
+            return new ResourceResponse(Status.ERROR);
+        }
+    }
 }

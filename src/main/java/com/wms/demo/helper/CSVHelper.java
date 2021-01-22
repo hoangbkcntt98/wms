@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.wms.demo.model.Abc;
 import com.wms.demo.model.Inventory;
+import com.wms.demo.model.Risk;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,8 +18,8 @@ import java.util.List;
 
 public class CSVHelper {
     public static String TYPE = "text/csv";
-    public static int ABC_TYPE = 1;
-    static String [] ABC_HEADER = {"id","name","range_abc"};
+//    public static int ABC_TYPE = 1;
+//    static String [] ABC_HEADER = {"id","name","range_abc"};
     public boolean hasCSVFormat(MultipartFile file){
         if(TYPE.equals(file.getContentType())) return true;
         return false;
@@ -68,4 +69,31 @@ public class CSVHelper {
             return null;
         }
     }
+    public static List<Risk> csvToRiskRelation(MultipartFile file){
+        try {
+            Reader reader = new InputStreamReader(file.getInputStream());
+            CSVReader csvReader = new CSVReaderBuilder(reader)
+                    .withSkipLines(1)
+                    .build();
+            String [] buff;
+            List<Risk> riskRelationList= new ArrayList<Risk>();
+            while((buff= csvReader.readNext())!=null){
+                int riskId = Integer.parseInt(buff[0]);
+                String parents = buff[1];
+                Risk risk = new Risk();
+                risk.setRiskId(riskId);
+                risk.setParents(parents);
+                riskRelationList.add(risk);
+
+            }
+            return riskRelationList;
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return null;
+    }
+
+
+
 }
